@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Dev Card Generator — Premium AI Profile Cards</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700;800;900&display=swap"
+        rel="stylesheet">
+    <!-- html2pdf.js library for high-quality PDF downloads -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #0b0f17;
+            --container-bg: rgba(17, 24, 39, 0.65);
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --accent-glow: rgba(59, 130, 246, 0.4);
+            --accent-primary: #3b82f6;
+            --accent-hover: #60a5fa;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --input-bg: rgba(10, 15, 26, 0.8);
+            --error-color: #ef4444;
+            --success-color: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow-x: hidden;
+            padding: 40px 20px;
+        }
+
+        /* Ambient Glowing Background Orbs */
+        .orb {
+            position: absolute;
+            width: 40vw;
+            height: 40vw;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.15;
+            z-index: 0;
+            pointer-events: none;
+            animation: float 20s infinite alternate;
+        }
+
+        .orb-1 {
+            top: -10%;
+            left: -10%;
+            background: radial-gradient(circle, #3b82f6 0%, transparent 80%);
+        }
+
+        .orb-2 {
+            bottom: -10%;
+            right: -10%;
+            background: radial-gradient(circle, #8b5cf6 0%, transparent 80%);
+            animation-delay: -5s;
+        }
+
+        .orb-3 {
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, #ec4899 0%, transparent 80%);
+            animation-delay: -10s;
+            width: 30vw;
+            height: 30vw;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate(50px, 30px) scale(1.1);
+            }
+
+            100% {
+                transform: translate(-30px, -50px) scale(0.9);
+            }
+        }
+
+        /* Grid Background Overlay */
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Premium Main Container */
+        .container {
+            max-width: 530px;
+            width: 100%;
+            background: var(--container-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            padding: 50px 40px;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            z-index: 10;
+            position: relative;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        header h1 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 900;
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, #fff 30%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+            letter-spacing: -1.5px;
+            line-height: 1.1;
+        }
+
+        header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+            font-weight: 500;
+        }
+
+        /* Card Customizer Section */
+        .section-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--accent-hover);
+            margin-bottom: 16px;
+            text-align: left;
+        }
+
+        /* Input Controls */
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 24px;
+            width: 100%;
+        }
+
+        .input-wrapper {
+            position: relative;
+            flex: 1;
+        }
+
+        .input-wrapper svg {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            color: var(--text-secondary);
+            pointer-events: none;
+            transition: color 0.2s;
+        }
+
+        input {
+            width: 100%;
+            padding: 16px 16px 16px 48px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background-color: var(--input-bg);
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-weight: 500;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.25);
+            background-color: rgba(10, 15, 26, 0.95);
+        }
+
+        input:focus+svg {
+            color: var(--accent-primary);
+        }
+
+        /* Theme Chip Selector */
+        .theme-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .theme-chip {
+            padding: 12px 10px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .theme-chip svg {
+            width: 18px;
+            height: 18px;
+            opacity: 0.8;
+        }
+
+        .theme-chip:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-primary);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .theme-chip.active {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--accent-hover);
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Quick-Click Devs */
+        .quick-select {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 32px;
+            justify-content: flex-start;
+        }
+
+        .quick-tag {
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid transparent;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quick-tag:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Generate CTA */
+        .generate-btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, var(--accent-primary) 0%, #4f46e5 100%);
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(79, 70, 229, 0.4);
+            transition: all 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.6);
+            background: linear-gradient(135deg, var(--accent-hover) 0%, #6366f1 100%);
+        }
+
+        .generate-btn:active {
+            transform: translateY(0);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Loader & skeleton screen */
+        #loading {
+            display: none;
+            margin-top: 40px;
+            padding: 30px;
+            background: var(--input-bg);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.03) 25%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0.03) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.6s infinite linear;
+            border-radius: 6px;
+            margin-bottom: 12px;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        .sk-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+        }
+
+        .sk-title {
+            width: 45%;
+            height: 22px;
+        }
+
+        .sk-text {
+            width: 100%;
+            height: 14px;
+        }
+
+        .sk-badge {
+            width: 85px;
+            height: 22px;
+            display: inline-block;
+            margin-right: 8px;
+            border-radius: 12px;
+        }
+
+        /* Card Preview Container */
+        #result-container {
+            display: none;
+            margin-top: 40px;
+            animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .card-view-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge-live {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success-color);
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 10px;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        #result-card {
+            border-radius: 20px;
+            overflow: hidden;
+            border: none;
+            background: transparent;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+            box-shadow: none;
+            width: 100%;
+        }
+
+        #result-card iframe {
+            width: 100%;
+            height: 480px;
+            border: none;
+            border-radius: 12px;
+            background: transparent;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        .action-btn {
+            padding: 14px 10px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .action-btn-primary {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.3);
+            color: var(--accent-hover);
+        }
+
+        .action-btn-primary:hover {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: var(--accent-primary);
+        }
+
+        .action-btn-success {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: var(--success-color);
+        }
+
+        .action-btn-success:hover {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: var(--success-color);
+        }
+
+        /* Modern Toast Notification */
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #111827;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 100;
+        }
+
+        #toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Error Banner */
+        #error-banner {
+            display: none;
+            margin-top: 20px;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: left;
+            font-size: 0.95rem;
+            animation: shake 0.5s linear;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20%,
+            60% {
+                transform: translateX(-6px);
+            }
+
+            40%,
+            80% {
+                transform: translateX(6px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="grid-overlay"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <div class="container">
+        <header>
+            <h1>GitHub Dev Card</h1>
+            <p>Generate a professional, AI-powered developer visualization card</p>
+        </header>
+
+        <!-- Username Input Section -->
+        <h3 class="section-title">Enter GitHub Username</h3>
+        <div class="input-group">
+            <div class="input-wrapper">
+                <input type="text" id="username" placeholder="Enter GitHub Username" spellcheck="false">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+            </div>
+            <button class="generate-btn" id="generate-btn" onclick="generateCard()">
+                Generate Card
+            </button>
+        </div>
+
+        <!-- Error notification banner -->
+        <div id="error-banner"></div>
+
+        <!-- Premium Skeleton Loader -->
+        <div id="loading">
+            <div style="display: flex; align-items: center; margin-bottom: 24px;">
+                <div class="skeleton sk-avatar"></div>
+                <div style="margin-left: 20px; flex: 1;">
+                    <div class="skeleton sk-title"></div>
+                </div>
+            </div>
+            <div class="skeleton sk-text" style="width: 95%;"></div>
+            <div class="skeleton sk-text" style="width: 85%;"></div>
+            <div style="margin-top: 24px; display: flex; gap: 8px;">
+                <div class="skeleton sk-badge"></div>
+                <div class="skeleton sk-badge"></div>
+                <div class="skeleton sk-badge"></div>
+            </div>
+        </div>
+
+        <!-- Card Result Container -->
+        <div id="result-container">
+            <div class="card-view-header">
+                <div class="card-title">
+                    Developer Card <span class="badge-live">Generated</span>
+                </div>
+            </div>
+            <div id="result-card"></div>
+            <div class="action-buttons">
+                <button class="action-btn" id="open-btn" onclick="openNewTab()">
+                    <svg style="width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="2"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                    Full Page
+                </button>
+                <button class="action-btn action-btn-success" id="pdf-btn" onclick="printCard()">
+                    <svg style="width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="2"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                    </svg>
+                    Print Card
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast">
+        <svg style="width:20px;height:20px;color:var(--success-color)" fill="none" stroke="currentColor"
+            stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span id="toast-text">Link copied to clipboard!</span>
+    </div>
+
+    <script>
+        let lastUrl = "";
+        let selectedTheme = "auto";
+
+        function selectTheme(theme) {
+            selectedTheme = theme;
+            const chips = document.querySelectorAll('.theme-chip');
+            chips.forEach(c => c.classList.remove('active'));
+            document.getElementById(`chip-${theme}`).classList.add('active');
+
+            // If a card is already visible, regenerate it with the new theme automatically
+            const username = document.getElementById('username').value.trim();
+            if (username && document.getElementById('result-container').style.display === 'block') {
+                generateCard();
+            }
+        }
+
+        function useQuickSelect(username) {
+            document.getElementById('username').value = username;
+            generateCard();
+        }
+
+        async function generateCard() {
+            const username = document.getElementById('username').value.trim();
+            if (!username) return;
+
+            const btn = document.getElementById('generate-btn');
+            const loader = document.getElementById('loading');
+            const result = document.getElementById('result-container');
+            const resultCard = document.getElementById('result-card');
+            const errorBanner = document.getElementById('error-banner');
+
+            // Reset UI
+            btn.disabled = true;
+            errorBanner.style.display = 'none';
+            result.style.display = 'none';
+            loader.style.display = 'block';
+
+            try {
+                const payload = { username };
+                if (selectedTheme !== 'auto') {
+                    payload.theme = selectedTheme;
+                }
+
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || data.error) {
+                    throw new Error(data.error || data.detail || 'Failed to generate card');
+                }
+
+                // Render in iframe to avoid stylesheet pollution and maintain sandboxed encapsulation
+                lastUrl = data.card_url;
+
+                const iframe = document.createElement('iframe');
+                iframe.src = lastUrl;
+                iframe.style.width = '100%';
+                iframe.style.height = '480px'; // initial default height
+                iframe.style.border = 'none';
+                iframe.style.borderRadius = '12px';
+                iframe.style.background = 'transparent';
+
+                iframe.onload = function () {
+                    try {
+                        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                        // Avoid nested scrollbars inside the iframe
+                        iframeDoc.body.style.margin = '0';
+                        iframeDoc.body.style.padding = '0';
+
+                        // Resize iframe dynamically after styles and images have had time to render
+                        setTimeout(() => {
+                            const card = iframeDoc.querySelector('.github-card');
+                            const height = card ? card.offsetHeight : iframeDoc.documentElement.scrollHeight;
+                            iframe.style.height = (height + 60) + 'px';
+                            // Ensure the card fits without scrolling
+                            iframeDoc.body.style.overflow = 'visible';
+                        }, 150);
+                    } catch (e) {
+                        console.error("Dynamic iframe sizing failed:", e);
+                    }
+                };
+
+                resultCard.innerHTML = '';
+                resultCard.appendChild(iframe);
+
+                loader.style.display = 'none';
+                result.style.display = 'block';
+                showToast("Developer card generated successfully!");
+            } catch (err) {
+                loader.style.display = 'none';
+                errorBanner.innerText = "Oops! " + err.message;
+                errorBanner.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        function copyLink() {
+            if (!lastUrl) return;
+            navigator.clipboard.writeText(lastUrl);
+            showToast("Copied card URL to clipboard!");
+        }
+
+        function openNewTab() {
+            if (!lastUrl) return;
+            window.open(lastUrl, '_blank');
+        }
+
+        function printCard() {
+            const iframe = document.querySelector('#result-card iframe');
+            if (!iframe) return;
+
+            try {
+                iframe.contentWindow.focus();
+                iframe.contentWindow.print();
+            } catch (err) {
+                showToast("Could not print card. Try opening in Full Page first.");
+                console.error("Print error:", err);
+            }
+        }
+
+        function showToast(text) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-text').innerText = text;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // Allow 'Enter' key to trigger generation
+        document.getElementById('username').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') generateCard();
+        });
+    </script>
+</body>
+
+</html>
