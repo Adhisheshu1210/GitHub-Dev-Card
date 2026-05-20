@@ -4,6 +4,9 @@ This project is an AI-powered developer card generator that scrapes a user's pub
 
 ---
 
+# live demo: https://github-card-generator-477047840260.us-central1.run.app/
+
+# live video demo:  https://youtu.be/o1WnBl4CMxY?si=FWs1t8eK7qYkE4yp
 ## 1. High-Level Architecture
 
 The project consists of three major layers:
